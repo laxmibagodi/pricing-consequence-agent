@@ -1,0 +1,110 @@
+[
+  {
+    "pricing_change": "20% discount for SMB customers who prepay an annual contract (Starter and Growth plans)",
+    "target_segment": "SMB",
+    "expected_effect": "Higher annual-plan mix and stronger upfront cash collection, with lower churn expected from annual lock-in.",
+    "actual_effect": "Annual-plan mix and new SMB signups rose as predicted, but annual accounts expanded far less than monthly accounts. The discounted base price anchored customers and seat add-ons slowed.",
+    "revenue_impact": "+22% new-logo revenue; -9% expansion revenue per account over 2 quarters",
+    "retention_impact": "-3 pts net revenue retention at 12 months (94% to 91%)",
+    "date": "2024-11-12"
+  },
+  {
+    "pricing_change": "Reduced the monthly event cap on the SMB Starter plan from 100k to 50k events with a hard cutoff",
+    "target_segment": "SMB",
+    "expected_effect": "Push heavy Starter users to upgrade to the Growth plan, lifting average revenue per account.",
+    "actual_effect": "Upgrades rose modestly, but a large share of capped users churned instead of upgrading, and support tickets about sudden cutoffs spiked.",
+    "revenue_impact": "+4% SMB average revenue per account; -7% Starter-plan MRR",
+    "retention_impact": "-5 pts logo retention among capped accounts",
+    "date": "2025-02-10"
+  },
+  {
+    "pricing_change": "25% discount on annual contracts for mid-market customers",
+    "target_segment": "mid-market",
+    "expected_effect": "More mid-market wins and faster deal cycles, with an acceptable margin give-up.",
+    "actual_effect": "Acquisition increased and deals closed 11 days faster, but expansion revenue declined because discounted accounts resisted add-on modules priced at list.",
+    "revenue_impact": "+18% new-logo revenue; -12% expansion revenue over 3 quarters",
+    "retention_impact": "-6 pts net revenue retention at 12 months",
+    "date": "2025-03-14"
+  },
+  {
+    "pricing_change": "15% bundle discount for buying the Analytics and Automation modules together",
+    "target_segment": "mid-market",
+    "expected_effect": "Higher Automation attach rate and better retention through product stickiness.",
+    "actual_effect": "Attach rate and retention both improved as predicted. Bundled accounts used more features and renewed at higher rates.",
+    "revenue_impact": "+14% net revenue per bundled account",
+    "retention_impact": "+5 pts gross retention at 6 months",
+    "date": "2025-05-20"
+  },
+  {
+    "pricing_change": "Extended the free trial from 14 days to 30 days for new signups",
+    "target_segment": "SMB",
+    "expected_effect": "A longer evaluation window would raise trial-to-paid conversion.",
+    "actual_effect": "Conversion fell. Extended trials let users lose momentum, and many never returned after week 2.",
+    "revenue_impact": "-8% new-logo revenue over the quarter",
+    "retention_impact": "Trial-to-paid conversion dropped from 21% to 17% (-4 pts); no change in 6-month retention of converted accounts",
+    "date": "2025-07-08"
+  },
+  {
+    "pricing_change": "24-month contract option with a two-year price lock (no discount, renewal uplift capped at 3%)",
+    "target_segment": "mid-market",
+    "expected_effect": "Improve retention and give finance more predictable revenue.",
+    "actual_effect": "Results matched expectations. About 35% of new mid-market deals chose 24 months, and renewal negotiations became noticeably smoother.",
+    "revenue_impact": "+6% contracted ARR visibility; expansion revenue flat (0%)",
+    "retention_impact": "+7 pts gross retention at 12 months",
+    "date": "2025-09-16"
+  },
+  {
+    "pricing_change": "15% bundle discount for buying the Analytics and Automation modules together (relaunch of the earlier bundle offer)",
+    "target_segment": "mid-market",
+    "expected_effect": "Repeat the retention lift seen in the Q2 bundle experiment.",
+    "actual_effect": "No measurable lift. The relaunch coincided with a full pricing-page redesign and new packaging layout, so it is unclear whether the bundle or the redesign drove buyer behavior.",
+    "revenue_impact": "+1% net revenue per bundled account (not statistically significant)",
+    "retention_impact": "+0.4 pts gross retention at 6 months (within noise)",
+    "date": "2025-10-21"
+  },
+  {
+    "pricing_change": "30% first-year discount for new SMB customers during the Q4 promotion",
+    "target_segment": "SMB",
+    "expected_effect": "A large surge in new SMB logos with an acceptable margin hit.",
+    "actual_effect": "Signups surged as predicted, but the promo cohort converted poorly to full price at first renewal and showed minimal add-on expansion.",
+    "revenue_impact": "+31% new-logo revenue in Q4; -15% expansion revenue versus prior cohorts",
+    "retention_impact": "-8 pts net revenue retention at first renewal",
+    "date": "2025-11-03"
+  },
+  {
+    "pricing_change": "3-year enterprise agreements with a 5% annual uplift cap and no upfront discount",
+    "target_segment": "enterprise",
+    "expected_effect": "Improve enterprise retention and make revenue more predictable.",
+    "actual_effect": "Outcomes matched expectations. Several large accounts committed to 3 years, and procurement cycles did not lengthen.",
+    "revenue_impact": "+11% average enterprise contract value; +4% expansion revenue",
+    "retention_impact": "+4 pts net revenue retention at 12 months",
+    "date": "2026-01-27"
+  },
+  {
+    "pricing_change": "Replaced the SMB Starter hard event cap with pay-as-you-go overage at $0.40 per 1,000 events above 50k",
+    "target_segment": "SMB",
+    "expected_effect": "Recover revenue from heavy users without increasing churn.",
+    "actual_effect": "Better than expected. Overage revenue exceeded the forecast and churn among heavy users fell, since accounts were no longer cut off mid-month.",
+    "revenue_impact": "+12% SMB Starter MRR (forecast was +5%)",
+    "retention_impact": "+3 pts logo retention among heavy users",
+    "date": "2026-03-24"
+  },
+  {
+    "pricing_change": "Raised the enterprise minimum contract price by 12% and required VP approval for any discount above 10%",
+    "target_segment": "enterprise",
+    "expected_effect": "Improve margins with minimal loss of deals.",
+    "actual_effect": "Margins improved, but win rate slipped more than predicted in competitive deals against two named rivals.",
+    "revenue_impact": "+8% average enterprise contract value; -5% enterprise new-logo count",
+    "retention_impact": "No change in enterprise net revenue retention (0 pts)",
+    "date": "2026-04-07"
+  },
+  {
+    "pricing_change": "Free 30-day guided pilot with a dedicated onboarding specialist for mid-market prospects",
+    "target_segment": "mid-market",
+    "expected_effect": "Higher pilot-to-paid conversion for mid-market deals.",
+    "actual_effect": "Conversion beat expectations. Guided onboarding drove faster adoption, and pilot accounts reached key features in the first two weeks.",
+    "revenue_impact": "+24% mid-market new-logo revenue",
+    "retention_impact": "+3 pts gross retention at 90 days",
+    "date": "2026-06-16"
+  }
+]
