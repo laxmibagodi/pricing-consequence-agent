@@ -1,30 +1,32 @@
 """
-Groq wrapper (OpenAI-compatible endpoint). Wrapped with retries since the
-free tier rate-limits aggressively, and the hackathon brief specifically
-warns about function-calling errors on the recommended free models —
-we sidestep that entirely by not using tool calling, just plain completions.
+Groq wrapper using the official `groq` SDK (no openai package).
+
+Retries are handled here, not inside the SDK (max_retries=0), so a failure
+takes a predictable amount of time and always ends in a GroqError that
+api.py can map to a clean 503. Plain completions only, no tool calling,
+which sidesteps the function-calling errors the hackathon brief warns about.
 """
 
 import os
 import time
-from openai import OpenAI
+
+from groq import Groq
 
 _client = None
 
 
 class GroqError(Exception):
-    """Raised when Groq fails after all retries. api.py should catch this
-    and return a clean error response instead of a raw 500."""
+    """Raised when Groq fails after all retries. api.py maps this to a 503."""
     pass
 
 
-def get_client() -> OpenAI:
+def get_client() -> Groq:
     global _client
     if _client is None:
         api_key = os.environ.get("GROQ_API_KEY")
         if not api_key:
             raise GroqError("GROQ_API_KEY is not set")
-        _client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+        _client = Groq(api_key=api_key, max_retries=0)
     return _client
 
 
@@ -48,8 +50,12 @@ def complete(system_prompt: str, user_prompt: str, max_retries: int = 3) -> str:
             if not content or not content.strip():
                 raise GroqError("Groq returned an empty response")
             return content
+        except GroqError as e:
+            if "GROQ_API_KEY" in str(e):
+                raise  # a missing key won't fix itself on retry
+            last_err = e
         except Exception as e:
             last_err = e
-            if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
+        if attempt < max_retries - 1:
+            time.sleep(2 ** attempt)
     raise GroqError(f"Groq completion failed after {max_retries} attempts: {last_err}")
