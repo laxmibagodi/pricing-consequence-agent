@@ -182,21 +182,40 @@ SEGMENTS = ("enterprise", "mid-market", "smb")
 SEED_FILE = Path(__file__).resolve().parent.parent / "data" / "pricing_decisions.json"
 
 
+CHANGE_TYPES = {
+    "discount": ("discount", "promotion", "promo"),
+    "price_increase": ("price hike", "price increase", "raise price", "raise the price"),
+    "trial": ("trial",),
+    "bundle": ("bundle",),
+    "cap": ("hard cap", "usage cap", "usage limit", "starter cap"),
+    "overage": ("overage",),
+}
+
+
 def evidence_confidence(precedents: list, proposal: str = "") -> dict:
     relevant = [p for p in precedents if p["score"] >= RELEVANCE_MIN]
     if not relevant:
-        return {"level": "none", "relevant_count": 0, "top_score": 0.0, "segment_match": False}
-    named = [s for s in SEGMENTS if s in proposal.lower()]
-    segment_match = True
-    if named:
-        segment_match = any(s in p["text"].lower() for p in relevant for s in named)
-    top = max(p["score"] for p in relevant)
-    n = len(relevant)
-    level = "high" if n >= 3 and top >= 0.7 else "medium" if n >= 2 or top >= 0.7 else "low"
-    if not segment_match:
-        level = "low"
-    return {"level": level, "relevant_count": n,
-            "top_score": round(top, 2), "segment_match": segment_match}
+        return {"level": "none", "relevant_count": 0, "exact_count": 0, "top_score": 0.0,
+                "segment_match": False, "type_match": False}
+    q = proposal.lower()
+    segs = [s for s in SEGMENTS if s in q]
+    kinds = [k for k, words in CHANGE_TYPES.items() if any(w in q for w in words)]
+
+    def check(p):
+        t = p["text"].lower()
+        seg_ok = not segs or any(s in t for s in segs)
+        type_ok = not kinds or any(w in t for k in kinds for w in CHANGE_TYPES[k])
+        return seg_ok, type_ok
+
+    checks = [(p, *check(p)) for p in relevant]
+    exact = [p for p, seg_ok, type_ok in checks if seg_ok and type_ok]
+    top = max((p["score"] for p in exact), default=max(p["score"] for p in relevant))
+    n = len(exact)
+    level = "high" if n >= 2 and top >= 0.7 else "medium" if n >= 1 and top >= 0.5 else "low"
+    return {"level": level, "relevant_count": len(relevant), "exact_count": n,
+            "top_score": round(top, 2),
+            "segment_match": any(c[1] for c in checks),
+            "type_match": any(c[2] for c in checks)}
 
 
 def get_history() -> list:
