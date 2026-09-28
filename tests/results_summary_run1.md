@@ -6,7 +6,7 @@ Response: A similar 25% discount was tested with mid-market customers. It increa
 has_evidence=True | verdict=supported | confidence=0.92 | evidence_items=5 | top_score=0.92
 Contradictions (0): []
 Patterns (1): ['Discounting mid-market annual contracts improves acquisition metrics but reduces expansion revenue and net revenue retention']
-FLAG: an evidence item is stamped 2026-09-28 (likely the fused blob record)
+FLAG: an evidence item is stamped When: 2026-09-28 (likely the fused blob record)
 
 ### T2
 Proposal: Run a 35% first-year promo for new SMB customers next quarter.
@@ -42,7 +42,6 @@ Response: A 15% bundle discount for Analytics and Automation was tested with mid
 has_evidence=True | verdict=mixed | confidence=0.56 | evidence_items=5 | top_score=0.93
 Contradictions (1): ['May\u202f2025 implementation showed a 14% revenue increase and 5‑point retention gain, while the October\u202f2025 relaunch showed only a 1% revenue increase and 0.4‑point retention change']
 Patterns (2): ['Bundle discounts can increase net revenue and retention when implemented in isolation', 'Concurrent pricing or packaging changes can obscure the impact of bundle discounts']
-FLAG: an evidence item is stamped 2026-09-28 (likely the fused blob record)
 
 ### T7
 Proposal: Bundle Automation with Analytics at a discount to improve mid-market retention.
@@ -50,7 +49,6 @@ Response: A 15% bundle discount for Analytics and Automation was tested with mid
 has_evidence=True | verdict=mixed | confidence=0.56 | evidence_items=5 | top_score=0.93
 Contradictions (1): ['May\u202f2025 15% bundle showed a +5‑point 6‑month gross retention lift, while October\u202f2025 15% bundle showed only a +0.4‑point change, indicating conflicting retention outcomes for the same discount.']
 Patterns (3): ['A 15% bundle discount for Analytics and Automation in the mid-market segment was associated with a 14% increase in net revenue per account and a 5‑point increase in 6‑month gross retention when implemented in isolation (May\u202f2025).', 'When the 15% bundle discount was launched alongside a prici...
-FLAG: an evidence item is stamped 2026-09-28 (likely the fused blob record)
 
 ### T8
 Proposal: Should we change our pricing?

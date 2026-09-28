@@ -23,9 +23,7 @@ Best before/after exchanges found during testing. Used for the demo video and th
 > "Proceed, and this is one of the healthier discount structures you've proposed... multi-product customers typically churn less and expand more, so 15% is well within the range that pays for itself."
 
 **Agent response (with memory):**
-> A 15% bundle discount for Analytics and Automation was tested with mid-market customers in May 2025, resulting in a 14% increase in net revenue per account and a 5-percentage-point lift in 6-month gross retention. A later relaunch of the same 15% bundle in October 2025 showed no measurable retention lift, only a statistically insignificant 1% net revenue increase and a 0.4-point change in 6-month gross retention...
->
-> _(Paste the rest of the answer from `tests/agent_results_run1.md`, section T6.)_
+> A 15% bundle discount for Analytics and Automation was tested with mid-market customers in May 2025, resulting in a 14% increase in net revenue per account and a 5-percentage-point lift in 6-month gross retention. A later relaunch of the same 15% bundle in October 2025 showed no measurable retention lift, only a statistically insignificant 1% net revenue increase and a 0.4-point change in 6-month gross retention, likely confounded by concurrent pricing-page redesigns.
 
 **Verdict / confidence shown:** `mixed` / 0.56
 

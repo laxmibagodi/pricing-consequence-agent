@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "tests" / "agent_results.md"
 OUTPUT = ROOT / "tests" / "results_summary.md"
-BLOB_MARKER = "2026-09-28"  # today's date on the fused/undated records
+BLOB_MARKER = "When: 2026-09-28"  # today's date used as a decision date (fused record)
 
 
 def short(text: str, limit: int = 420) -> str:

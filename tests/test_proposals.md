@@ -109,7 +109,7 @@ Record numbers refer to the position in `data/pricing_decisions.json` (1 = first
 - **Proposal:** "Bundle Automation with Analytics at a discount to improve mid-market retention."
 - **Expected behavior:** Same contradiction as T6, framed around retention. Must not average the two results into a vague "modest improvement."
 - **Supporting records:** 4, 7
-- **Observed:** verdict `mixed`, confidence 0.56, contradiction surfaced, pattern notes concurrent pricing changes. Pass.
+- **Observed:** verdict `mixed`, confidence 0.56, contradiction surfaced. The pricing-page redesign appears in the patterns but **not in the response text** (T6 mentions it in the response). Pass, with a note for Prapthi.
 
 ---
 
@@ -135,7 +135,7 @@ Record numbers refer to the position in `data/pricing_decisions.json` (1 = first
 - **Proposal:** "Give enterprise and mid-market customers a 25% discount for annual contracts."
 - **Expected behavior:** Splits its answer. Mid-market: cites record 3 and the pattern. Enterprise: says an annual discount has never been tested (records 9 and 11 are a price lock and a price increase, not a discount).
 - **Supporting records:** 3 (mid-market), 1 and 8 (pattern); 9 and 11 as "enterprise tested, but not with a discount"
-- **Observed:** verdict `mixed`, confidence 0.56. States that enterprise has not been tested under a 25% annual discount. Pass.
+- **Observed:** verdict `mixed`, confidence 0.56. States that enterprise has not been tested under a 25% annual discount. Pass, but **fragile**: the only enterprise record (record 11) came back with a relevance score of 0.5004, just above the 0.5 gate.
 
 ---
 
