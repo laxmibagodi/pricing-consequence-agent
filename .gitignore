@@ -1,2 +1,4 @@
 backend/.history_*.json
 .env
+__pycache__/
+*.pyc
