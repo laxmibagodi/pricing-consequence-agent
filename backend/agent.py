@@ -185,6 +185,40 @@ def _parse_groq_output(raw: str) -> dict:
         "contradictions": [],
     }
 
+def _build_focused_query(proposal: str) -> str:
+    """
+    Create a compact search query containing only the core pricing change
+    and target segment. Business rationale/context is removed so that
+    similarity search is not diluted by unrelated wording.
+    """
+
+    prompt = f"""
+Extract only the core pricing change and target customer segment
+from the proposal below.
+
+Remove:
+- business goals
+- revenue/bookings targets
+- rationale
+- expected outcomes
+- timing/context
+
+Return ONLY a short search query.
+Do not explain anything.
+
+Proposal:
+{proposal}
+"""
+
+    try:
+        return llm_client.complete(
+            "You extract concise pricing search queries.",
+            prompt
+        ).strip() or proposal
+
+    except GroqError:
+        # If query extraction fails, fall back to the original proposal.
+        return proposal
 
 def _calculate_verdict_and_confidence(
     recalled: list[dict],
@@ -301,7 +335,12 @@ def respond_to_proposal(proposal: str) -> AgentResponse:
     # ---------------------------------------------------------
 
     try:
-        raw_recalled = memory.recall_similar(proposal)
+        focused_query = _build_focused_query(proposal)
+
+        original_results = memory.recall_similar(proposal)
+        focused_results = memory.recall_similar(focused_query)
+
+        raw_recalled = original_results + focused_results
 
     except memory.MemoryServiceError as e:
         # A Hindsight failure is NOT "no evidence".
