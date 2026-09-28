@@ -24,9 +24,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 load_dotenv()
 
-import memory
-from agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
-from llm_client import GroqError
+from backend import memory
+from backend.agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
+from backend.llm_client import GroqError
 
 logger = logging.getLogger("pricing_api")
 
@@ -129,8 +129,8 @@ def log_outcome(req: OutcomeRequest):
         "target_segment": _extract_segment(req.proposal),
         "expected_effect": _extract_expected_effect(req.proposal),
         "actual_effect": req.outcome,
-        "revenue_impact": req.revenue_impact,
-        "retention_impact": req.retention_impact,
+        "revenue_impact": req.revenue_impact or "not recorded",
+        "retention_impact": req.retention_impact or "not recorded",
         "date": date.today().isoformat(),
     }
 

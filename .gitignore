@@ -1,2 +1,9 @@
+@"
 backend/.history_*.json
 .env
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+"@ | Set-Content .gitignore

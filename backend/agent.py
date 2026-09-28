@@ -17,12 +17,11 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-import memory
-import llm_client
-from llm_client import GroqError
+from backend import memory, llm_client
+from backend.llm_client import GroqError
 
 
-MIN_RELEVANCE_SCORE = 0.5
+MIN_RELEVANCE_SCORE = memory.RELEVANCE_MIN (0.3)
 # Recall results scoring below this are not treated as evidence.
 
 
@@ -223,17 +222,21 @@ Proposal:
 def _calculate_verdict_and_confidence(
     recalled: list[dict],
     contradictions: list[str],
+    proposal: str = "",
 ) -> tuple[str, float]:
     """
     Calculate verdict and confidence from evidence.
 
     Verdict:
       - no_precedent : no usable historical evidence
-      - mixed         : relevant evidence exists but outcomes conflict
-      - supported     : relevant evidence exists without reported conflict
+      - partial       : related evidence exists, but none matches both the
+                        proposal's segment and its type of change
+      - mixed         : matching evidence exists but outcomes conflict
+      - supported     : matching evidence exists without reported conflict
 
     Confidence:
       - Based on the strongest relevance score.
+      - Capped at 0.35 when there is no exact segment + change-type match.
       - Contradictions reduce confidence because historical outcomes disagree.
       - Always constrained to [0.0, 1.0].
 
@@ -251,17 +254,17 @@ def _calculate_verdict_and_confidence(
     # Keep confidence in the valid 0-1 range.
     confidence = max(0.0, min(1.0, strongest_score))
 
+    # Does any evidence match the proposal's segment AND type of change?
+    match = memory.evidence_confidence(recalled, proposal)
+
+    if match["exact_count"] == 0:
+        return "partial", round(min(confidence, 0.35), 2)
+
     if contradictions:
         # Conflicting historical evidence makes the conclusion less certain.
-        confidence *= 0.6
-        verdict = "mixed"
-    else:
-        verdict = "supported"
+        return "mixed", round(confidence * 0.6, 2)
 
-    confidence = round(confidence, 2)
-
-    return verdict, confidence
-
+    return "supported", round(confidence, 2)
 
 def _analyze_with_groq(
     proposal: str,
@@ -430,6 +433,7 @@ def respond_to_proposal(proposal: str) -> AgentResponse:
     verdict, confidence = _calculate_verdict_and_confidence(
         recalled,
         analysis["contradictions"],
+        proposal,
     )
 
     # ---------------------------------------------------------

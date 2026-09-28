@@ -3,6 +3,10 @@ The ONLY file that talks to Hindsight."""
 import json
 import os
 from pathlib import Path
+import hashlib
+import inspect
+from datetime import datetime, timezone
+import re
 
 from dotenv import load_dotenv
 from hindsight_client import Hindsight
@@ -19,6 +23,36 @@ HISTORY_FILE = Path(__file__).parent / f".history_{BANK_ID}.json"
 DECISION_KEYS = ("pricing_change", "target_segment", "expected_effect",
                  "actual_effect", "revenue_impact", "retention_impact", "date")
 
+_RETAIN_PARAMS = set(inspect.signature(Hindsight.retain).parameters)
+
+
+def _parse_date(s):
+    try:
+        return datetime.strptime(s[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def _human_date(iso):
+    try:
+        return datetime.strptime(iso[:10], "%Y-%m-%d").strftime("%d %B %Y").lstrip("0")
+    except (ValueError, TypeError):
+        return iso
+
+
+def _doc_id(d):
+    raw = f"{d['date']}|{d['target_segment']}|{d['pricing_change']}"
+    return "decision-" + hashlib.sha1(raw.encode()).hexdigest()[:16]
+
+
+def _retain_kwargs(decision):
+    kwargs = {"bank_id": BANK_ID, "content": _format_decision(decision)}
+    ts = _parse_date(decision["date"])
+    if ts is not None and "timestamp" in _RETAIN_PARAMS:
+        kwargs["timestamp"] = ts
+    if "document_id" in _RETAIN_PARAMS:
+        kwargs["document_id"] = _doc_id(decision)
+    return kwargs
 
 class MemoryServiceError(Exception):
     """Any Hindsight failure. An empty recall is NOT an error."""
@@ -61,7 +95,8 @@ def _to_dict(obj) -> dict:
 
 def _format_decision(d: dict) -> str:
     return (
-        f"Pricing decision made on {d['date']}: {d['pricing_change']}. "
+        f"On {_human_date(d['date'])} ({d['date']}), the company made this pricing decision: "
+        f"{d['pricing_change']}. "
         f"Target segment: {d['target_segment']}. "
         f"Expected effect: {d['expected_effect']}. "
         f"Actual effect: {d['actual_effect']}. "
@@ -90,7 +125,7 @@ def retain_decision(decision: dict) -> None:
     if missing:
         raise ValueError(f"decision is missing fields: {missing}")
     try:
-        _get_client().retain(bank_id=BANK_ID, content=_format_decision(decision))
+        _get_client().retain(**_retain_kwargs(decision))
     except MemoryServiceError:
         raise
     except Exception as e:
@@ -111,21 +146,43 @@ def _extract_score(d: dict):
     v = d.get("score")
     return float(v) if isinstance(v, (int, float)) else None
 
+_PURPOSE_CUT = re.compile(
+    r"(?:[,;]|\b(?:in order to|so that|so we|because|ahead of|given that|"
+    r"to (?:hit|reach|meet|increase|improve|boost|drive|grow|raise|lift|win|close|"
+    r"capture|counter|beat|offset|reduce|cut|accelerate|attract|retain))\b).*$",
+    re.I,
+)
+
+
+def _core_query(proposal: str):
+    """The pricing change without the business-purpose clause, or None if unchanged."""
+    core = _PURPOSE_CUT.sub("", proposal).strip(" ,;.")
+    if len(core) >= 12 and core.lower() != proposal.strip().lower():
+        return core
+    return None
 
 def recall_similar(proposal: str, limit: int = 5) -> list:
-    try:
-        res = _get_client().recall(bank_id=BANK_ID, query=proposal)
-    except MemoryServiceError:
-        raise
-    except Exception as e:
-        raise MemoryServiceError(f"Hindsight recall failed: {e}") from e
+    queries = [proposal]
+    core = _core_query(proposal)
+    if core:
+        queries.append(core)
 
-    grouped = {}  # one precedent per stored decision
-    for r in list(getattr(res, "results", None) or []):
+    raw = []
+    for q in queries:
+        try:
+            res = _get_client().recall(bank_id=BANK_ID, query=q)
+        except MemoryServiceError:
+            raise
+        except Exception as e:
+            raise MemoryServiceError(f"Hindsight recall failed: {e}") from e
+        raw.extend(list(getattr(res, "results", None) or []))
+
+    grouped = {}  # one precedent per stored decision; best score across both queries
+    for r in raw:
         d = _to_dict(r)
         text = d.get("text") or str(r)
         score = _extract_score(d)
-        g = grouped.setdefault(d.get("occurred_start") or d.get("document_id") or text,
+        g = grouped.setdefault(d.get("document_id") or text,
                                {"texts": [], "score": 0.0, "metadata": {}})
         if text not in g["texts"]:
             g["texts"].append(text)
@@ -135,6 +192,7 @@ def recall_similar(proposal: str, limit: int = 5) -> list:
             g["metadata"] = {k: d[k] for k in
                              ("document_id", "type", "occurred_start", "occurred_end", "tags")
                              if d.get(k) is not None}
+            g["metadata"].update(d.get("metadata") or {})
 
     out = [{"text": " ".join(g["texts"]),
             "score": max(0.0, min(1.0, g["score"])),
@@ -156,26 +214,6 @@ def reflect_pattern(proposal: str) -> dict:
     summary = getattr(res, "text", None) or str(res)
     return {"summary": summary, "evidence": recall_similar(proposal)}
 
-
-SEED_FILE = Path(__file__).resolve().parent.parent / "data" / "pricing_decisions.json"
-
-
-def get_history() -> list:
-    seed = []
-    if BANK_ID == "pricing-decisions" and SEED_FILE.exists():
-        try:
-            seed = json.loads(SEED_FILE.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            seed = []
-    merged, seen = [], set()
-    for h in seed + _read_history():
-        key = (h["pricing_change"], h["target_segment"], h["date"])
-        if key in seen:
-            continue
-        seen.add(key)
-        merged.append({k: h[k] for k in
-                       ("pricing_change", "target_segment", "actual_effect", "date")})
-    return sorted(merged, key=lambda h: h["date"], reverse=True)
 
 RELEVANCE_MIN = 0.3
 SEGMENTS = ("enterprise", "mid-market", "smb")
@@ -220,7 +258,7 @@ def evidence_confidence(precedents: list, proposal: str = "") -> dict:
 
 def get_history() -> list:
     seed = []
-    if BANK_ID == "pricing-decisions" and SEED_FILE.exists():
+    if "test" not in BANK_ID and "empty" not in BANK_ID and SEED_FILE.exists():
         try:
             seed = json.loads(SEED_FILE.read_text(encoding="utf-8"))
         except json.JSONDecodeError:

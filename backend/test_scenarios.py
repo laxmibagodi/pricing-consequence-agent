@@ -13,9 +13,8 @@ GROQ_API_KEY plus Midhat's dataset.
 import json
 import sys
 
-import llm_client
-import memory
-from agent import respond_to_proposal, _parse_groq_output, MemoryUnavailableError
+from backend import llm_client, memory
+from backend.agent import respond_to_proposal, _parse_groq_output, MemoryUnavailableError
 
 RESULTS = []   # (status, name)
 PENDING = []
@@ -29,13 +28,24 @@ def pending(text):
     PENDING.append(text)
 
 
-# ---------- harness ----------
+def stub_recall(proposal, limit=5):
+    p = proposal.lower()
+    if "bundle" in p:  # must be checked first: T3 mentions both bundle and discount
+        return [item("Q2 bundle discount: retention improved by 4%.", 0.80, segment="Enterprise"),
+                item("Q4 bundle discount: no retention change; coincided with a pricing-page redesign.", 0.75, segment="Enterprise")]
+    if "enterprise" in p and "discount" in p:
+        return [item("25% annual discount, mid-market: acquisition up, expansion revenue down.", 0.82, segment="Mid-market"),
+                item("20% first-year discount, SMB: signups up, churn after the discount ended.", 0.74, segment="SMB"),
+                item("Free trial extension, mid-market: no conversion change.", 0.38, segment="Mid-market")]
+    return []
+
 
 class Harness:
     """Swap memory + Groq for fixtures, capture what Groq receives."""
 
     def __init__(self, recall=None, reflect=None, groq_reply=None):
-        self.recall, self.reflect = recall, reflect
+        self.recall = recall
+        self.reflect = reflect if reflect is not None else {"summary": "stub summary", "evidence": []}
         self.groq_reply = groq_reply or json.dumps(
             {"answer": "ok", "patterns": [], "contradictions": []})
         self.sent = None
@@ -43,10 +53,11 @@ class Harness:
 
     def __enter__(self):
         self._orig = (memory.recall_similar, memory.reflect_pattern, llm_client.complete)
-        if self.recall is not None:
+        if self.recall is None:
+            memory.recall_similar = lambda p, limit=5: stub_recall(p, limit)
+        else:
             memory.recall_similar = lambda p, limit=5: self.recall
-        if self.reflect is not None:
-            memory.reflect_pattern = lambda p: self.reflect
+        memory.reflect_pattern = lambda p: self.reflect
 
         def fake(system, user):
             self.groq_calls += 1
@@ -185,7 +196,17 @@ check("E7 truncated JSON with escaped quotes: answer salvaged correctly", w["ans
 w = _parse_groq_output('{"answer": 42, "patterns": []}')
 check("E7 non-string answer: does not crash", isinstance(w["answer"], str))
 
+# V1 no exact match: enterprise proposal, only mid-market discount evidence
+mm = item("25% discount on annual contracts for the mid-market segment: expansion revenue down", 0.9, segment="Mid-market")
+with Harness(recall=[mm]) as h:
+    r = respond_to_proposal("Give enterprise customers a 30% discount for annual contracts")
+    check("V1 no exact segment match -> partial, confidence capped at 0.35",
+          r.verdict == "partial" and r.confidence <= 0.35)
 
+# V2 exact match: same segment and change type
+with Harness(recall=[mm]) as h:
+    r = respond_to_proposal("Give mid-market customers a 25% discount for annual contracts")
+    check("V2 exact match -> supported", r.verdict == "supported" and r.confidence == 0.9)
 # ============ report ============
 width = max(len(n) for _, n in RESULTS)
 for status, name in RESULTS:
