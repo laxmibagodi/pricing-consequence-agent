@@ -7,7 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from hindsight_client import Hindsight
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 BASE_URL = os.getenv("HINDSIGHT_BASE_URL", "https://api.hindsight.vectorize.io")
 API_KEY = os.getenv("HINDSIGHT_API_KEY")

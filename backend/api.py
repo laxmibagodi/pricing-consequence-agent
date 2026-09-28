@@ -22,9 +22,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
-import memory
+from backend import memory
 from agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
 from llm_client import GroqError
 
