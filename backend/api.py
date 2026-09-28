@@ -22,7 +22,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 from backend import memory
 from backend.agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
