@@ -1,2 +1,25 @@
-backend/.history_*.json
+# Environment
 .env
+*.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Backend history files
+backend/.history_*.json
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env
+
+# OS
+.DS_Store
+Thumbs.db
