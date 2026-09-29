@@ -1,61 +1,203 @@
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1"> <title>Pricing Consequence Agent</title> <style> :root{--bg:#f6f7fd;--card:#fff;--ink:#141834;--mute:#5a6084;--line:#e2e5f3;--a:#6a5cff;--b:#00c9ab;--warn:#ff8a3d;--code:#eef0fb} @media(prefers-color-scheme:dark){:root{--bg:#0a0c1a;--card:#151830;--ink:#eef0ff;--mute:#a1a8cf;--line:#272b4c;--code:#0a0c18}}
-{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:920px;margin:0 auto;padding:0 20px 60px}
-header{position:relative;overflow:hidden;color:#fff;text-align:center;padding:76px 20px 70px;background:linear-gradient(135deg,#3a2fd6,#6a5cff 45%,#00c9ab)}
-header::before,header::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.1)}
-header::before{width:340px;height:340px;top:-140px;left:-90px}header::after{width:260px;height:260px;bottom:-120px;right:-60px}
-header>{position:relative}
-.eyebrow{display:inline-block;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);padding:5px 14px;border-radius:99px;margin-bottom:18px}
-h1{margin:0 0 12px;font-size:clamp(2.2rem,7vw,3.8rem);letter-spacing:-.03em;line-height:1.05}
-header p{max-width:640px;margin:0 auto 26px;font-size:1.12rem;opacity:.96}
-.stats{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);border-radius:14px;padding:10px 20px;min-width:120px}
-.stat b{display:block;font-size:1.6rem;line-height:1.2}.stat small{opacity:.9}
-nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-nav .in{max-width:920px;margin:0 auto;padding:10px 20px;display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
-nav a{color:var(--mute);text-decoration:none;font-size:.88rem;padding:5px 12px;border-radius:99px}
-nav a:hover{background:var(--card);color:var(--a)}
-section{margin-top:56px}
-h2{font-size:1.7rem;margin:0 0 6px;letter-spacing:-.02em}
-.sub{color:var(--mute);margin:0 0 20px}
-h3{margin:0 0 6px;font-size:1.05rem}p{margin:0 0 12px}
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:.2s}
-.card:hover{transform:translateY(-3px);border-color:var(--a);box-shadow:0 10px 28px rgba(106,92,255,.15)}
-.ico{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:1.2rem;margin-bottom:10px;color:#fff}
-.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:99px;background:var(--code);color:var(--a)}
-.pill.mix{background:rgba(255,138,61,.15);color:var(--warn)}.pill.ok{background:rgba(0,201,171,.15);color:#0a9e88}
-.chat{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 12px 40px rgba(106,92,255,.12)}
-.chat .bar{padding:10px 16px;background:var(--code);font-size:.8rem;color:var(--mute)}
-.msg{padding:16px 20px;border-top:1px solid var(--line)}.msg small{display:block;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-size:.7rem;margin-bottom:4px}
-.msg.plain{opacity:.75}.msg.agent{background:linear-gradient(90deg,rgba(106,92,255,.07),rgba(0,201,171,.07))}
-.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--card);margin-top:16px}
-table{border-collapse:collapse;width:100%;font-size:.92rem}
-th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
-th{background:var(--code);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}tr:last-child td{border:0}
-.bad{color:var(--warn)}.good{color:#0a9e88;font-weight:600}
-.arch{position:relative;max-width:640px;margin:8px auto 0;padding-left:64px}
-.arch::before{content:"";position:absolute;left:24px;top:18px;bottom:18px;width:3px;border-radius:3px;background:linear-gradient(var(--a),var(--b))}
-.layer{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:18px}
-.layer::before{content:attr(data-n);position:absolute;left:-64px;top:10px;width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));color:#fff;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 5px var(--bg)}
-.layer::after{content:"▼";position:absolute;left:-46px;bottom:-19px;font-size:.7rem;color:var(--b);background:var(--bg);line-height:1}
-.layer:last-of-type::after{display:none}
-.layer h3{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.layer p{margin:0;color:var(--mute);font-size:.92rem}
-.layer.mem{border-color:var(--b);background:linear-gradient(90deg,var(--card),rgba(0,201,171,.1))}
-.layer.llm{border-color:var(--a);background:linear-gradient(90deg,var(--card),rgba(106,92,255,.1))}
-.loop{margin:6px 0 0;padding:12px 16px;border:2px dashed var(--b);border-radius:14px;text-align:center;color:var(--mute);font-size:.92rem}
-.loop b{color:var(--b)}
-pre,code{font-family:ui-monospace,Consolas,monospace}
-pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:.85rem;line-height:1.55;margin:8px 0 14px}
-code{background:var(--code);padding:1px 6px;border-radius:5px;font-size:.88em}pre code{background:none;padding:0}
-.tree{color:var(--mute)}
-ul.check{list-style:none;padding:0;margin:0}ul.check li{padding:6px 0 6px 28px;position:relative}ul.check li::before{content:"○";position:absolute;left:4px;color:var(--a);font-weight:700}
-.setup{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:8px 22px 14px;counter-reset:s}
-.step{position:relative;padding:16px 0 4px 48px;border-bottom:1px solid var(--line);counter-increment:s}.step:last-child{border:0}
-.step::before{content:counter(s);position:absolute;left:0;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));color:#fff;font-weight:700;display:grid;place-items:center}
-.note{border-left:4px solid var(--warn);background:rgba(255,138,61,.1);padding:10px 14px;border-radius:0 10px 10px 0;font-size:.9rem;margin:8px 0 12px}
-footer{text-align:center;color:var(--mute);font-size:.88rem;margin-top:56px}
-</style>
+# 🎯 Pricing Consequence Agent
 
-</head> <body> <header> <span class="eyebrow">Hack with Hyderabad 3.0 · Built on Hindsight</span> <h1>Pricing Consequence<br>Agent</h1> <p>Trace the consequences of a pricing decision <b>before</b> you make it. What happened last time, what's genuinely untested, and how confident we can be.</p> <div class="stats"> <div class="stat"><b>3</b><small>Hindsight ops</small></div> <div class="stat"><b>0.0</b><small>confidence when unproven</small></div> <div class="stat"><b>$1.95B</b><small>pricing software market</small></div> </div> </header> <nav><div class="in"><a href="#problem">Problem</a><a href="#what">Solution</a><a href="#demo">Demo</a><a href="#arch">Architecture</a><a href="#hindsight">Hindsight</a><a href="#stack">Stack</a><a href="#market">Market</a><a href="#roadmap">Roadmap</a><a href="#team">Team</a><a href="#setup">Setup</a></div></nav> <div class="wrap"> <section id="problem"> <h2>The problem</h2> <p class="sub">Every pricing change is an experiment. Almost nobody records the result.</p> <div class="grid"> <div class="card"><div class="ico">🧠</div><h3>Lost memory</h3><p>What backfired lives in someone's head, an old spreadsheet, or nowhere.</p></div> <div class="card"><div class="ico">⏳</div><h3>Delayed damage</h3><p>Harm shows up a quarter later in expansion or retention, detached from its cause.</p></div> <div class="card"><div class="ico">🔍</div><h3>A tooling gap</h3><p>PROS, Vendavo and Pricefx optimize forward-looking prices. None ask: <i>what happened last time?</i></p></div> </div> <p style="margin-top:14px;color:var(--mute);font-size:.92rem">88% of organizations use AI in at least one function, yet only 6% see measurable profit impact (McKinsey, State of AI 2026). Gartner expects 40%+ of agentic AI projects to be cancelled by end of 2027, because most agents reset instead of compounding.</p> </section> <section id="what"> <h2>The solution</h2> <p class="sub">Precedent-based reasoning, powered by persistent memory.</p> <div class="grid"> <div class="card"><span class="pill ok">Pattern match</span><p style="margin-top:10px">Cites your own numbers, dates and segments.</p></div> <div class="card"><span class="pill">No precedent</span><p style="margin-top:10px">Says so plainly instead of inventing an answer.</p></div> <div class="card"><span class="pill mix">Contradiction</span><p style="margin-top:10px">Surfaces conflicting outcomes and the likely confounder.</p></div> </div> </section> <section id="demo"> <h2>See it think</h2> <p class="sub">Tested on Arcline, a fictional mid-market B2B SaaS company with a seeded Hindsight bank.</p> <div class="chat"> <div class="bar">● ● ● Proposal: 15% bundle discount (Analytics + Automation), mid-market</div> <div class="msg plain"><small>Plain LLM, no memory</small>"Proceed. One of the healthier discount structures you've proposed."</div> <div class="msg agent"><small>Pricing Consequence Agent</small>Tested in May 2025: <b>+14% net revenue</b> and <b>+5 pt retention</b>. The October relaunch showed only <b>+1%</b> and no retention lift. A concurrent pricing-page redesign likely obscured the effect. Isolate that variable before deciding.<br><br><span class="pill mix">mixed</span> <span class="pill">confidence 0.56</span></div> </div> <div class="scroll"><table> <tr><th>Proposal</th><th>Plain LLM</th><th>Agent</th></tr> <tr><td>25% annual discount, enterprise + mid-market</td><td class="bad">"Cap at 10-15%" (rule of thumb)</td><td>Mid-market: +18% new-logo revenue, 11 days faster deals, -12% expansion, -6 pts NRR. <span class="good">Enterprise never tested.</span></td></tr> <tr><td>Monthly API-call limit, enterprise</td><td class="bad">Detailed, confident tiering plan</td><td><span class="good">No precedent</span>, confidence 0.0. Only SMB tested. Track the outcome.</td></tr> <tr><td>30% annual discount, mid-market</td><td class="bad">Industry norm; asks for your data</td><td>Cites the 25% precedent with dates. Pattern: acquisition up, expansion and NRR down.</td></tr> </table></div> </section> <section id="arch"> <h2>Architecture</h2> <p class="sub">From proposal to verdict, and back into memory.</p> <div class="arch"> <div class="layer" data-n="1"><h3>React UI <span class="pill">Vite</span></h3><p>Chat interface and memory timeline. The user submits a proposal in plain language.</p></div> <div class="layer" data-n="2"><h3>FastAPI backend <span class="pill">backend.api</span></h3><p>Extracts segment, change type and contract structure from the proposal.</p></div> <div class="layer mem" data-n="3"><h3>Hindsight Recall <span class="pill ok">memory</span></h3><p>Searches the memory bank for comparable past decisions and their outcomes.</p></div> <div class="layer mem" data-n="4"><h3>Hindsight Reflect <span class="pill ok">memory</span></h3><p>Synthesizes patterns and contradictions across related decisions.</p></div> <div class="layer llm" data-n="5"><h3>Groq LLM <span class="pill">gpt-oss-120b</span></h3><p>Turns retrieved memory into a grounded answer, constrained to what memory supports.</p></div> <div class="layer" data-n="6"><h3>Verdict, confidence, records</h3><p>Returns <code>supported</code>, <code>mixed</code> or <code>no_precedent</code>, with the supporting record IDs.</p></div> <div class="layer" data-n="7"><h3>Human decides</h3><p>The agent advises; a person makes the call and the real outcome is observed.</p></div> <div class="layer mem" data-n="8"><h3>Hindsight Retain <span class="pill ok">memory</span></h3><p>The actual outcome is stored, so the next answer already reflects it.</p></div> </div> <div class="loop"><b>↺ Learning loop:</b> step 8 feeds the memory bank that step 3 searches. The agent compounds instead of resetting.</div> <div class="grid" style="margin-top:22px"> <div class="card"><h3>Memory is the product</h3><p>Every answer is driven by Retain, Recall and Reflect, not LLM priors.</p></div> <div class="card"><h3>Honest about gaps</h3><p><code>no_precedent</code> returns 0.0 confidence, never a stretched analogy.</p></div> <div class="card"><h3>Contradictions shown</h3><p>Conflicting outcomes are surfaced, not averaged away.</p></div> </div> <h3 style="margin-top:26px">Project structure</h3> <pre class="tree"><code>pricing-consequence-agent/ ├── backend/ FastAPI app + agent + Hindsight integration ├── frontend/ React + Vite: chat and memory timeline ├── data/ Synthetic Arcline pricing dataset ├── scripts/ Live Hindsight demo scripts ├── tests/ Offline tests, baseline and agent result logs ├── demo_examples.md Best before/after exchanges └── pytest.ini</code></pre> </section> <section id="hindsight"> <h2>How Hindsight is used</h2> <p class="sub">Not a bolt-on. It is the entire product.</p> <div class="grid"> <div class="card"><div class="ico">💾</div><h3>Retain</h3><p>Stores each decision: the change, segment, expected effect and, once known, the actual effect on revenue and retention.</p></div> <div class="card"><div class="ico">🔎</div><h3>Recall</h3><p>Retrieves similar changes, segments and contract structures for a new proposal.</p></div> <div class="card"><div class="ico">💡</div><h3>Reflect</h3><p>Finds trends across decisions, e.g. "discounts consistently hurt expansion revenue".</p></div> </div> <p style="margin-top:14px;color:var(--mute)"><i>Hindsight memory map: add image here.</i></p> </section> <section id="stack"> <h2>Tech stack</h2> <div class="scroll"><table> <tr><th>Layer</th><th>Choice</th><th>Why</th></tr> <tr><td>Memory</td><td>Hindsight Cloud</td><td>Retain / Recall / Reflect</td></tr> <tr><td>LLM</td><td>Groq <code>openai/gpt-oss-120b</code></td><td>Free tier, fast for live demos</td></tr> <tr><td>Backend</td><td>Python, FastAPI</td><td>Clean Hindsight SDK support</td></tr> <tr><td>Frontend</td><td>React, Vite</td><td>Chat and memory timeline</td></tr> <tr><td>Tests</td><td>pytest</td><td>Offline unit suite</td></tr> </table></div> </section> <section id="market"> <h2>Market and buyer</h2> <div class="grid"> <div class="card"><h3>Market</h3><p>Price optimization software: ~$1.95B (2026) to ~$4.17B by 2031 (Mordor Intelligence). Incumbents validate the budget; none offer precedent-based memory.</p></div> <div class="card"><h3>Buyer</h3><p>Head of Pricing, RevOps lead or VP Product/Growth at a mid-market B2B SaaS ($10M-$500M ARR).</p></div> <div class="card"><h3>ROI</h3><p>"We avoided repeating a discount that hurt expansion revenue": a line for the board deck.</p></div> </div> </section> <section id="roadmap"> <h2>Roadmap</h2> <div class="card"><ul class="check"> <li>Outcome feedback endpoint, so real results change later answers</li> <li>Clearer verdict labels (<code>supported</code> can read as "go ahead" on a negative precedent)</li> <li>Fix false "no precedent" results when extra business context is added</li> <li>Empty vs. seeded memory-bank comparison in the UI</li> <li>Import real pricing history (CSV, billing exports)</li> </ul></div> </section> <section id="team"> <h2>Team</h2> <div class="grid"> <div class="card"><div class="ico">🏗️</div><h3>Laxmi <span class="pill">Lead</span></h3><p>Architecture and memory engineering: Hindsight integration, memory schema, reasoning loop, final technical calls, leads the live demo.</p></div> <div class="card"><div class="ico">⚙️</div><h3>Prapthi</h3><p>Agent, backend, frontend and content: Groq integration, reasoning layer, API, outcome loop, chat UI and memory timeline, articles and posts, video editing and YouTube upload.</p></div> <div class="card"><div class="ico">🧪</div><h3>Midhat</h3><p>Data and QA: synthetic pricing dataset, edge-case stress tests, strongest before/after examples.</p></div> </div> </section> <section id="setup"> <h2>Setup instructions</h2> <p class="sub">Windows, from the project root. Needs Python 3.12+, Node.js and npm, plus Groq and Hindsight API keys.</p> <div class="setup"> <div class="step"><h3>Clone the repo</h3> <pre><code>git clone https://github.com/laxmibagodi/pricing-consequence-agent.git cd pricing-consequence-agent</code></pre></div> <div class="step"><h3>Add your API keys</h3><p>Create <code>backend/.env</code>:</p> <pre><code>GROQ_API_KEY=your-groq-api-key HINDSIGHT_API_KEY=your-hindsight-api-key</code></pre> <p><code>HINDSIGHT_BASE_URL</code> and <code>HINDSIGHT_BANK_ID</code> are optional. Set <code>VITE_API_URL</code> in <code>frontend/.env</code> only if the API is hosted elsewhere.</p></div> <div class="step"><h3>Create the Python environment</h3> <pre><code>py -3.12 -m venv .venv .\.venv\Scripts\Activate.ps1 python -m pip install -r backend\requirements.txt</code></pre></div> <div class="step"><h3>Start the backend (terminal 1)</h3> <pre><code>python -m uvicorn backend.api:app --reload</code></pre> <p>Check <code>http://localhost:8000/health</code>.</p></div> <div class="step"><h3>Install and start the frontend (terminal 2)</h3> <pre><code>cd frontend npm install npm run dev</code></pre> <div class="note">Run <code>npm install</code> before <code>npm run dev</code> on a fresh clone. Skipping it gives <i>'vite' is not recognized</i>. Ignore the npm deprecation warnings; they don't block the app.</div> <p>Open <code>http://localhost:5173</code>.</p></div> <div class="step"><h3>Run the tests</h3> <pre><code>python -m pytest</code></pre> <p>Offline unit suite. Live Hindsight demos are separate scripts.</p></div> </div> </section> <footer>Prepared for Hack with Hyderabad 3.0 — "AI Agents That Learn Using Hindsight"</footer> </div> </body> </html>
+Trace the consequences of a pricing decision **before** you make it. What happened last time, what's genuinely untested, and how confident we can be.
+
+> **Built for Hack with Hyderabad 3.0** — AI Agents That Learn Using Hindsight
+
+---
+
+## The Problem 🤔
+
+Every pricing change is an experiment. Almost nobody records the result.
+
+| Issue | Description |
+|-------|-------------|
+| **Lost Memory** 🧠 | What backfired lives in someone's head, an old spreadsheet, or nowhere |
+| **Delayed Damage** ⏳ | Harm shows up a quarter later in expansion or retention, detached from its cause |
+| **Tooling Gap** 🔍 | PROS, Vendavo and Pricefx optimize forward-looking prices. None ask: *what happened last time?* |
+
+> 88% of organizations use AI in at least one function, yet only 6% see measurable profit impact *(McKinsey, State of AI 2026)*  
+> Gartner expects 40%+ of agentic AI projects to be cancelled by end of 2027, because most agents reset instead of compounding.
+
+---
+
+## The Solution 💡
+
+**Precedent-based reasoning, powered by persistent memory.**
+
+- 🟢 **Pattern Match** — Cites your own numbers, dates and segments
+- ⚪ **No Precedent** — Says so plainly instead of inventing an answer
+- 🟠 **Contradiction** — Surfaces conflicting outcomes and the likely confounder
+
+---
+
+## See It Think 🎬
+
+**Proposal:** 15% bundle discount (Analytics + Automation), mid-market
+
+### Plain LLM (no memory):
+> "Proceed. One of the healthier discount structures you've proposed."
+
+### Pricing Consequence Agent:
+> Tested in May 2025: **+14% net revenue** and **+5 pt retention**. The October relaunch showed only **+1%** and no retention lift. A concurrent pricing-page redesign likely obscured the effect. Isolate that variable before deciding.
+>
+> 🟠 **mixed** | ⚪ **confidence 0.56**
+
+---
+
+## Architecture 🏗️
+
+**From proposal to verdict, and back into memory.**
+
+```
+1. React UI (Vite)
+   ↓ User submits proposal in plain language
+2. FastAPI backend
+   ↓ Extracts segment, change type, contract structure
+3. Hindsight Recall (memory)
+   ↓ Searches for comparable past decisions
+4. Hindsight Reflect (memory)
+   ↓ Synthesizes patterns and contradictions
+5. Groq LLM (gpt-oss-120b)
+   ↓ Turns retrieved memory into grounded answer
+6. Verdict, confidence, records
+   ↓ Returns: supported | mixed | no_precedent
+7. Human decides
+   ↓ Agent advises; person makes call; outcome observed
+8. Hindsight Retain (memory)
+   ↓ Actual outcome stored for future answers
+   
+↺ Learning loop: Step 8 → Step 3 (agent compounds instead of resetting)
+```
+
+### Key Principles
+
+- **Memory is the product** — Every answer driven by Retain, Recall, and Reflect, not LLM priors
+- **Honest about gaps** — `no_precedent` returns 0.0 confidence, never a stretched analogy
+- **Contradictions shown** — Conflicting outcomes surfaced, not averaged away
+
+### Project Structure
+
+```
+pricing-consequence-agent/
+├── backend/              FastAPI app + agent + Hindsight integration
+├── frontend/             React + Vite: chat and memory timeline
+├── data/                 Synthetic Arcline pricing dataset
+├── scripts/              Live Hindsight demo scripts
+├── tests/                Offline tests, baseline and agent result logs
+├── demo_examples.md      Best before/after exchanges
+├── index.html            Beautiful HTML documentation
+└── pytest.ini
+```
+
+---
+
+## How Hindsight is Used 🧠
+
+**Not a bolt-on. It is the entire product.**
+
+| Operation | Purpose |
+|-----------|---------|
+| **💾 Retain** | Stores each decision: the change, segment, expected effect, and actual effect on revenue and retention |
+| **🔎 Recall** | Retrieves similar changes, segments and contract structures for a new proposal |
+| **💡 Reflect** | Finds trends across decisions (e.g., "discounts consistently hurt expansion revenue") |
+
+---
+
+## Tech Stack ⚙️
+
+| Layer | Choice | Why |
+|-------|--------|-----|
+| **Memory** | Hindsight Cloud | Retain / Recall / Reflect |
+| **LLM** | Groq `openai/gpt-oss-120b` | Free tier, fast for live demos |
+| **Backend** | Python, FastAPI | Clean Hindsight SDK support |
+| **Frontend** | React, Vite | Chat and memory timeline |
+| **Tests** | pytest | Offline unit suite |
+
+---
+
+## Market & Buyer 📊
+
+- **Market Size** — $1.95B (2026) → $4.17B by 2031 *(Mordor Intelligence)*. Incumbents validate the budget; none offer precedent-based memory.
+- **Buyer** — Head of Pricing, RevOps lead, or VP Product/Growth at mid-market B2B SaaS ($10M–$500M ARR)
+- **ROI** — "We avoided repeating a discount that hurt expansion revenue" — a line for the board deck
+
+---
+
+## Roadmap 🚀
+
+- [ ] Outcome feedback endpoint so real results change later answers
+- [ ] Clearer verdict labels (`supported` can read as "go ahead" on a negative precedent)
+- [ ] Fix false "no precedent" results when extra business context is added
+- [ ] Empty vs. seeded memory-bank comparison in the UI
+- [ ] Import real pricing history (CSV, billing exports)
+
+---
+
+## Team 👥
+
+| Name | Role | Focus |
+|------|------|-------|
+| **🏗️ Laxmi** (Lead) | Architecture & Memory Engineering | Hindsight integration, memory schema, reasoning loop, live demo |
+| **⚙️ Prapthi** | Agent, Backend, Frontend & Content | Groq integration, API, outcome loop, chat UI, articles, videos |
+| **🧪 Midhat** | Data & QA | Synthetic dataset, edge-case tests, best examples |
+
+---
+
+## Setup Instructions 🛠️
+
+**Requirements:** Python 3.12+, Node.js & npm, Groq API key, Hindsight API key
+
+### Step 1: Clone the repo
+```powershell
+git clone https://github.com/laxmibagodi/pricing-consequence-agent.git
+cd pricing-consequence-agent
+```
+
+### Step 2: Add your API keys
+Create `backend/.env`:
+```dotenv
+GROQ_API_KEY=your-groq-api-key
+HINDSIGHT_API_KEY=your-hindsight-api-key
+```
+> `HINDSIGHT_BASE_URL` and `HINDSIGHT_BANK_ID` are optional.  
+> Set `VITE_API_URL` in `frontend/.env` only if the API is hosted elsewhere.
+
+### Step 3: Create the Python environment
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+### Step 4: Start the backend (terminal 1)
+```powershell
+python -m uvicorn backend.api:app --reload
+```
+✅ Check health: `http://localhost:8000/health`
+
+### Step 5: Start the frontend (terminal 2)
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+> ⚠️ Run `npm install` before `npm run dev` on a fresh clone. Ignoring npm deprecation warnings is safe.
+
+✅ Open: `http://localhost:5173`
+
+### Step 6: Run the tests
+```powershell
+python -m pytest
+```
+> Offline unit suite. Live Hindsight demos are separate scripts.
+
+---
+
+## View the HTML Documentation
+
+Open `index.html` in a browser for a beautifully formatted version of this project.
+
+---
+
+**Prepared for Hack with Hyderabad 3.0** — "AI Agents That Learn Using Hindsight"
