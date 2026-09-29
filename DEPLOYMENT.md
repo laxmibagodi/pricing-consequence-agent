@@ -1,187 +1,195 @@
 # Deployment Guide: Vercel (Frontend) + Render (Backend)
 
-## Overview
+## Architecture
 
-- **Frontend**: Deployed on Vercel (React + Vite)
-- **Backend**: Deployed on Render (Python + FastAPI)
-
-Both services need to communicate across different domains, with proper environment variable configuration.
-
----
-
-## Backend Deployment (Render)
-
-Your backend is already deployed at: `https://pricing-consequence-agent.onrender.com`
-
-**Render Environment Variables** (already configured):
-- `GROQ_API_KEY` — Your Groq API key
-- `HINDSIGHT_API_KEY` — Your Hindsight API key
-- `HINDSIGHT_BASE_URL` — Memory service endpoint (optional, defaults to Hindsight Cloud)
-- `HINDSIGHT_BANK_ID` — Memory bank ID (optional, defaults to `pricing-decisions-v2`)
-
-✅ Backend health check: `https://pricing-consequence-agent.onrender.com/health`
+- **Frontend**: React + Vite → Deployed on **Vercel** (separate domain)
+- **Backend**: Python FastAPI → Deployed on **Render** (separate domain, already running)
+- **Communication**: Frontend calls backend via `VITE_API_URL` environment variable
 
 ---
 
-## Frontend Deployment (Vercel)
+## Backend Status ✅
 
-### Step 1: Connect Your Repository to Vercel
+Backend is already running at: `https://pricing-consequence-agent.onrender.com`
+
+**Verification:**
+```
+curl https://pricing-consequence-agent.onrender.com/health
+→ {"status":"ok"}
+```
+
+---
+
+## Frontend Deployment on Vercel
+
+### Step 1: Connect GitHub Repository
 
 1. Go to [vercel.com](https://vercel.com)
-2. Sign in with your GitHub account
-3. Click "Add New..." → "Project"
-4. Import your GitHub repository: `laxmibagodi/pricing-consequence-agent`
-5. Configure the project:
-   - **Framework Preset**: Vite
-   - **Root Directory**: `frontend` (or leave blank if Vercel auto-detects)
-   - **Build Command**: `npm run build` (Vercel should auto-detect)
-   - **Output Directory**: `dist` (Vercel should auto-detect)
+2. Click "Add New..." → "Project"
+3. Select: `laxmibagodi/pricing-consequence-agent`
+4. **Root Directory**: Set to `frontend` (IMPORTANT!)
+5. **Framework**: Vercel should auto-detect as "Vite"
+6. Leave Build and Output settings as default
+7. Click "Deploy"
 
-### Step 2: Add Environment Variable in Vercel
+### Step 2: Set Environment Variable in Vercel
 
-This is **critical** for frontend-to-backend communication.
+After deployment, configure the backend URL:
 
-1. In Vercel project settings, go to: **Settings** → **Environment Variables**
-2. Add a new environment variable:
+1. Go to **Settings** → **Environment Variables**
+2. Add new variable:
    - **Name**: `VITE_API_URL`
    - **Value**: `https://pricing-consequence-agent.onrender.com`
-   - **Environments**: Select "Production" (and "Preview" if desired for testing)
-   - Click "Save"
+   - **Environments**: Production (+ Preview if testing)
+3. Click "Save"
 
-**Why this matters:**
-- Vite needs `VITE_API_URL` during build time to bake the backend URL into the JavaScript
-- Without this, the frontend will default to `localhost:8000`, which won't work on Vercel
-- The `.env.production` file in the repo acts as a placeholder; Vercel's UI overrides it
+### Step 3: Redeploy
 
-### Step 3: Deploy
-
-1. Commit your code to GitHub (including the `.env.production` file and `vercel.json`)
-2. Push to the `main` branch
-3. Vercel automatically detects the push and triggers a build
-4. Once deployed, your frontend will be available at a Vercel URL (e.g., `https://pricing-consequence-agent.vercel.app`)
+1. Go to **Deployments**
+2. Find the latest deployment
+3. Click "Redeploy"
+4. Wait for build to complete
 
 ### Step 4: Verify Connection
 
 1. Open your Vercel frontend URL
-2. Try submitting a pricing proposal
-3. Check the browser DevTools Console (F12 → Console tab) for any errors
-4. If successful, you'll see the agent's analysis
+2. Open browser DevTools (F12 → Network tab)
+3. Submit a pricing proposal
+4. Verify request goes to `https://pricing-consequence-agent.onrender.com/ask`
+5. Response should contain agent analysis ✅
+
+---
+
+## File Configuration
+
+### `vercel.json` (Root)
+Tells Vercel to treat `frontend` as the project root:
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite"
+}
+```
+
+### `frontend/vercel.json`
+Explicit frontend build configuration (optional, for clarity):
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite"
+}
+```
+
+### `frontend/.env.production`
+Placeholder (Vercel UI environment variable overrides this):
+```
+VITE_API_URL=$VITE_API_URL
+```
+
+### `frontend/.env.development`
+Local development configuration:
+```
+VITE_API_URL=http://localhost:8000
+```
 
 ---
 
 ## Local Development
 
-For local development, use the existing setup:
-
+### Terminal 1: Start Backend
 ```powershell
-# Terminal 1: Start backend
 python -m uvicorn backend.api:app --reload
+```
+Backend runs at: `http://localhost:8000`
 
-# Terminal 2: Start frontend
+### Terminal 2: Start Frontend
+```powershell
 cd frontend
+npm install
 npm run dev
 ```
+Frontend runs at: `http://localhost:5173`
 
-The frontend will use `.env.development` which points to `http://localhost:8000`.
-
----
-
-## Environment Variable Flow
-
-### Development (localhost)
-```
-.env.development: VITE_API_URL=http://localhost:8000
-                     ↓
-              npm run dev
-                     ↓
-           Frontend at http://localhost:5173
-                     ↓
-              Calls http://localhost:8000/ask
-                     ↓
-                 Works locally ✅
-```
-
-### Production (Vercel + Render)
-```
-Vercel UI: VITE_API_URL=https://pricing-consequence-agent.onrender.com
-                     ↓
-              npm run build
-                     ↓
-         Build artifact includes Render URL
-                     ↓
-           Frontend at https://xxx.vercel.app
-                     ↓
-      Calls https://pricing-consequence-agent.onrender.com/ask
-                     ↓
-         Backend on Render processes request
-                     ↓
-              Works in production ✅
-```
+Both run locally and connect via `localhost:8000` ✅
 
 ---
 
 ## Troubleshooting
 
-### "The pricing memory service is temporarily unavailable"
+### Vercel Shows "FastAPI" as Framework
+**Cause**: Vercel detected `backend/api.py` instead of focusing on `frontend`
 
-**Cause**: Frontend is calling the wrong backend URL or backend is down.
+**Fix**: 
+1. In Vercel project settings, set **Root Directory** to `frontend`
+2. Set **Framework** to `Vite`
+3. Trigger redeploy
 
-**Fix**:
-1. Check Vercel Environment Variables: `VITE_API_URL=https://pricing-consequence-agent.onrender.com`
-2. Check backend is running: `https://pricing-consequence-agent.onrender.com/health`
-3. Check browser DevTools Network tab for failed requests to the backend
-
-### Build fails on Vercel
-
-**Cause**: Missing dependencies or build configuration issues.
+### Frontend Shows "Memory Service Unavailable"
+**Cause**: `VITE_API_URL` environment variable not set or incorrect in Vercel
 
 **Fix**:
-1. Ensure `frontend/package.json` is correct
-2. Check Vercel build logs: Settings → Deployments → View Log
-3. Verify `npm run build` works locally: `cd frontend && npm run build`
+1. Check Vercel Settings → Environment Variables
+2. Verify `VITE_API_URL=https://pricing-consequence-agent.onrender.com`
+3. Redeploy after changing
 
-### CORS errors
+### Frontend Can't Reach Backend
+**Cause**: Backend might be down or URL is wrong
 
-**Status**: Should not occur. Backend has `allow_origins=["*"]`.
-
-If CORS errors appear, the backend URL is likely incorrect or the backend is down.
-
----
-
-## Files Reference
-
-| File | Purpose |
-|------|---------|
-| `frontend/.env.development` | Local dev config (localhost:8000) |
-| `frontend/.env.production` | Production config placeholder (Vercel UI overrides this) |
-| `frontend/vercel.json` | Vercel build configuration |
-| `backend/api.py` | Render backend (no changes needed) |
+**Fix**:
+1. Test backend directly: `https://pricing-consequence-agent.onrender.com/health`
+2. Check Vercel env var is correct
+3. Check browser DevTools Console for errors
 
 ---
 
-## Summary Checklist
+## Project Structure (for Vercel)
 
-- [ ] Backend deployed on Render: `https://pricing-consequence-agent.onrender.com`
-- [ ] Backend health check passes: `https://pricing-consequence-agent.onrender.com/health`
-- [ ] Repository pushed to GitHub with latest code
-- [ ] Vercel project created and connected to repository
-- [ ] Vercel environment variable set: `VITE_API_URL=https://pricing-consequence-agent.onrender.com`
-- [ ] Frontend deployed successfully on Vercel
-- [ ] Frontend can reach backend (test with pricing proposal)
-- [ ] DevTools Console shows no errors
+```
+pricing-consequence-agent/
+├── frontend/                    ← Vercel deploys THIS
+│   ├── src/
+│   │   ├── components/
+│   │   ├── services/
+│   │   │   └── api.js          ← Uses VITE_API_URL
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── vite.config.js
+│   ├── vercel.json             ← Build config
+│   ├── .env.development
+│   ├── .env.production
+│   ├── index.html
+│   └── package.json
+├── backend/                     ← Runs on Render (separate)
+│   ├── api.py
+│   ├── agent.py
+│   ├── memory.py
+│   └── requirements.txt
+└── vercel.json                  ← Root config (tells Vercel to use frontend/)
+```
 
 ---
 
-## Questions?
+## Summary
 
-If the frontend and backend aren't connecting:
-
-1. **Check browser DevTools Console** (F12 → Console) for error messages
-2. **Check Vercel build logs** for any build-time errors
-3. **Verify backend is running**: Visit `https://pricing-consequence-agent.onrender.com/health` in browser
-4. **Verify environment variable**: In Vercel UI, confirm `VITE_API_URL` is set correctly
-5. **Rebuild on Vercel**: Trigger a manual rebuild in Vercel → Deployments → "Redeploy"
+| Component | Location | URL | Status |
+|-----------|----------|-----|--------|
+| Backend | Render | `https://pricing-consequence-agent.onrender.com` | ✅ Running |
+| Frontend | Vercel | `https://xxx.vercel.app` | Deploy now |
+| Config | GitHub | `frontend/vercel.json` + `.env.production` | ✅ Ready |
 
 ---
 
-**Ready to deploy!** 🚀
+## Next Steps
+
+1. ✅ Backend is running on Render
+2. ⏳ Deploy frontend on Vercel (connect GitHub repo, set Root Directory to `frontend`)
+3. ⏳ Add `VITE_API_URL` environment variable in Vercel
+4. ⏳ Redeploy
+5. ✅ Frontend and backend communicate
+
+**Both services run independently. Frontend calls backend via HTTPS.** 🚀
+
