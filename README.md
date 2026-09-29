@@ -2,7 +2,7 @@
 
 Trace the consequences of a pricing decision **before** you make it. What happened last time, what's genuinely untested, and how confident we can be.
 
-> **Built for Hack with Hyderabad 3.0** — AI Agents That Learn Using Hindsight
+> AI Agent That Learn Using Hindsight
 
 ---
 
@@ -199,5 +199,3 @@ python -m pytest
 Open `index.html` in a browser for a beautifully formatted version of this project.
 
 ---
-
-**Prepared for Hack with Hyderabad 3.0** — "AI Agents That Learn Using Hindsight"
