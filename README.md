@@ -3,6 +3,9 @@
 Trace the consequences of a pricing decision **before** you make it. What happened last time, what's genuinely untested, and how confident we can be.
 
 > AI Agent That Learn Using Hindsight
+>
+> Wanna TRY????? why not !
+> here u go - https://pricing-consequence-agent.vercel.app/
 
 ---
 
