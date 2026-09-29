@@ -26,8 +26,8 @@ from pathlib import Path
 load_dotenv(dotenv_path=Path(__file__).parent / ".env")
 
 from backend import memory
-from agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
-from llm_client import GroqError
+from backend.agent import AgentResponse, MemoryUnavailableError, ProposalError, respond_to_proposal
+from backend.llm_client import GroqError
 
 logger = logging.getLogger("pricing_api")
 

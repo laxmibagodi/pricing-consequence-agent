@@ -26,8 +26,8 @@ import pytest
 # ---------------------------------------------------------------------------
 # Import after path fix
 # ---------------------------------------------------------------------------
-import agent
-from agent import (
+from backend import agent
+from backend.agent import (
     _classify_proposal,
     _clarification_response,
     STATUS_VALID,
@@ -43,18 +43,18 @@ from agent import (
 
 def _mock_llm_classify(result: str):
     """Return a context manager that makes llm_client.complete return result."""
-    return patch("agent.llm_client.complete", return_value=result)
+    return patch("backend.agent.llm_client.complete", return_value=result)
 
 
 def _mock_memory_empty():
     """Return a context manager that makes both recall_similar calls return []."""
-    return patch("agent.memory.recall_similar", return_value=[])
+    return patch("backend.agent.memory.recall_similar", return_value=[])
 
 
 def _mock_memory_error():
     from backend import memory as mem_module
     return patch(
-        "agent.memory.recall_similar",
+        "backend.agent.memory.recall_similar",
         side_effect=mem_module.MemoryServiceError("test error"),
     )
 
@@ -107,8 +107,8 @@ class TestClassifyProposal:
 
     def test_groq_failure_defaults_to_valid(self):
         """If Groq is down, classification falls back to valid so analysis proceeds."""
-        from llm_client import GroqError
-        with patch("agent.llm_client.complete", side_effect=GroqError("timeout")):
+        from backend.llm_client import GroqError
+        with patch("backend.agent.llm_client.complete", side_effect=GroqError("timeout")):
             result = _classify_proposal("Some pricing proposal")
         assert result == STATUS_VALID
 
@@ -155,7 +155,7 @@ class TestRespondToProposal:
     def test_valid_proposal_reaches_recall(self):
         with (
             _mock_llm_classify("valid"),
-            patch("agent.memory.recall_similar", return_value=[]) as mock_recall,
+            patch("backend.agent.memory.recall_similar", return_value=[]) as mock_recall,
         ):
             result = agent.respond_to_proposal(
                 "Offer a 20% discount to new enterprise customers."
@@ -169,7 +169,7 @@ class TestRespondToProposal:
     def test_vague_proposal_skips_recall(self):
         with (
             _mock_llm_classify("needs_clarification"),
-            patch("agent.memory.recall_similar") as mock_recall,
+            patch("backend.agent.memory.recall_similar") as mock_recall,
         ):
             result = agent.respond_to_proposal("Give customers a better deal.")
 
@@ -183,7 +183,7 @@ class TestRespondToProposal:
     def test_vague_change_pricing(self):
         with (
             _mock_llm_classify("needs_clarification"),
-            patch("agent.memory.recall_similar") as mock_recall,
+            patch("backend.agent.memory.recall_similar") as mock_recall,
         ):
             result = agent.respond_to_proposal("Change our pricing.")
 
@@ -196,7 +196,7 @@ class TestRespondToProposal:
     def test_out_of_scope_hire(self):
         with (
             _mock_llm_classify("out_of_scope"),
-            patch("agent.memory.recall_similar") as mock_recall,
+            patch("backend.agent.memory.recall_similar") as mock_recall,
         ):
             result = agent.respond_to_proposal("Hire 10 developers.")
 
@@ -209,7 +209,7 @@ class TestRespondToProposal:
     def test_out_of_scope_marketing(self):
         with (
             _mock_llm_classify("out_of_scope"),
-            patch("agent.memory.recall_similar") as mock_recall,
+            patch("backend.agent.memory.recall_similar") as mock_recall,
         ):
             result = agent.respond_to_proposal("Launch a social media campaign.")
 

@@ -27,8 +27,8 @@ from typing import Optional
 from pydantic import BaseModel
 
 from backend import memory
-import llm_client
-from llm_client import GroqError
+from backend import llm_client
+from backend.llm_client import GroqError
 
 
 # ---------------------------------------------------------------
